@@ -1,5 +1,5 @@
 import logo from './logo.svg';
-import planeger from './yariga.svg';
+import planeger from './planeger.svg';
 
 export {
   logo,
