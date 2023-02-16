@@ -3,7 +3,7 @@ import { useLogin } from "@pankod/refine-core";
 import { Container, Box } from "@pankod/refine-mui";
 
 // Logo...
-import { planeger } from '../assets';
+import { homenow } from '../assets';
 
 import { CredentialResponse } from "../interfaces/google";
 
@@ -67,7 +67,7 @@ export const Login: React.FC = () => {
           }}
         >
           <div>
-            <img src={planeger} alt="Planeger Logo" />
+            <img src={homenow} alt="Homenow Logo" />
           </div>
           <Box mt={4}>
             <GoogleButton />

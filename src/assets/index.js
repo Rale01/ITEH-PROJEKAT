@@ -1,7 +1,7 @@
 import logo from './logo.svg';
-import planeger from './planeger.svg';
+import homenow from './homenow.svg';
 
 export {
   logo,
-  planeger,
+  homenow,
 };
