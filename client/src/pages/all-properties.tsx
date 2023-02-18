@@ -25,14 +25,16 @@ const AllProperties = () => {
     filters, setFilters,
   } = useTable();
 
-  const AllProperties = data?.data ?? [];
+  const allProperties = data?.data ?? [];
 
+  {/* paginacija*/}
   const currentPrice = sorter.find((item) => item.field === 'price')?.order;
 
   const toggleSort = (field: string) => {
     setSorter([{ field, order: currentPrice === 'asc' ? 'desc' : 'asc'}])
   }
 
+  {/* pretraga*/}
   const currentFilterValues = useMemo(() => {
     const logicalFilters = filters.flatMap((item) => ('field' in item ? item : []))
 
@@ -51,7 +53,7 @@ const AllProperties = () => {
         <Box mt ="20px" sx={{display:"flex", flexWrap:"wrap", gap:3}}>
           <Stack direction="column" width="100%">
             <Typography fontSize={25} fontWeight={700} color="#11142d">
-              {!AllProperties.length ? 'There are no properties' : 'All Properties'}</Typography>
+              {!allProperties.length ? 'There are no properties' : 'All Properties'}</Typography>
             <Box mb={2} mt={3} display='flex' width='84%' justifyContent="space-between" flexWrap="wrap">
                 <Box display="flex" gap={2} flexWrap='wrap' marginBottom={{xs:'20px', sm: 0}}>
                     <CustomButton
@@ -61,6 +63,7 @@ const AllProperties = () => {
                       color="#fcfcfc"
                     />
 
+                    {/* pretraga*/}
                     <TextField
                       variant="outlined"
                       color="info"
@@ -76,7 +79,7 @@ const AllProperties = () => {
                       ])
                       }}
                     />
-
+                    {/* pretraga po tipu nekretnine*/}
                     <Select
                       variant="outlined"
                       color="info"
@@ -126,7 +129,7 @@ const AllProperties = () => {
         />
       </Stack>
       <Box mt = "20px" sx={{display:'flex', flexWrap:'wrap', gap: 3 }}>
-        {AllProperties.map((property) => (
+        {allProperties.map((property) => (
           <PropertyCard 
           key={property._id}
           id={property._id}
@@ -139,7 +142,8 @@ const AllProperties = () => {
         ))}
       </Box>
 
-          {AllProperties.length > 0 && (
+          {/* paginacija*/}
+          {allProperties.length > 0 && (
               <Box display="flex" gap={2} mt={3} flexWrap="wrap">
                   <CustomButton
                     title = {'Previous'}
