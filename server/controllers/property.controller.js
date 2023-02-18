@@ -14,7 +14,7 @@ cloudinary.config({
 })
 
 const getAllProperties = async (req, res) => {
-    const { _end, _order, _start, _sort, _title_like = "", propertyType = ""} = req.query;
+    const { _end, _order, _start, _sort, title_like = "", propertyType = ""} = req.query;
 
     const query = {};
 
@@ -22,8 +22,8 @@ const getAllProperties = async (req, res) => {
         query.propertyType = propertyType;
     }
 
-    if(_title_like){
-        query.title = {$regex: _title_like, $options: 'i' };
+    if(title_like){
+        query.title = {$regex: title_like, $options: 'i' };
     }
 
     try {
