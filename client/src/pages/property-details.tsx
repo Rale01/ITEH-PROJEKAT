@@ -56,6 +56,8 @@ const PropertyDetails = () => {
 
     const isCurrentUser = user.email === propertyDetails.creator.email;
 
+
+    {/*za brisanje propertija*/}
     const handleDeleteProperty = () => {
         const response = confirm(
             "Are you sure you want to delete this property?",
