@@ -12,11 +12,11 @@ import {
 
 import{
   AccountCircleOutlined,
-  ChatBubbleOutline,
   PeopleAltOutlined,
-  StarOutlineRounded,
   VillaOutlined,
 } from '@mui/icons-material';
+
+import InfoIcon from '@mui/icons-material/Info';
 
 import dataProvider from "@pankod/refine-simple-rest";
 import { MuiInferencer } from "@pankod/refine-inferencer/mui";
@@ -37,6 +37,7 @@ import {
   CreateProperty,
   AgentProfile,
   EditProperty,
+  AboutUs
 } from "pages";
 
 
@@ -151,14 +152,10 @@ function App() {
               icon: <PeopleAltOutlined></PeopleAltOutlined>
             },
             {
-              name: "reviews",
-              list:Home,
-              icon: <StarOutlineRounded></StarOutlineRounded>
-            },
-            {
-              name: "messages",
-              list:Home,
-              icon: <ChatBubbleOutline></ChatBubbleOutline>
+              name: "about-us",
+              options:{ label: 'About Us' },
+              list:AboutUs,
+              icon: <InfoIcon></InfoIcon>
             },
             {
               name: "my-profile",
