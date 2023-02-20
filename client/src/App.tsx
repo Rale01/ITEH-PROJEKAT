@@ -37,7 +37,8 @@ import {
   CreateProperty,
   AgentProfile,
   EditProperty,
-  AboutUs
+  AboutUs,
+
 } from "pages";
 
 
@@ -56,6 +57,7 @@ axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
 });
 
 function App() {
+  
   const authProvider: AuthProvider = {
     login: async({ credential }: CredentialResponse) => {
       const profileObj = credential ? parseJwt(credential) : null;
@@ -83,6 +85,12 @@ function App() {
             userid:data._id
           })
         );
+          // check if the user is an admin
+          if (profileObj.email === "homenow.manager@gmail.com") {
+            localStorage.setItem("isAdmin", "true");
+          } else {
+            localStorage.removeItem("isAdmin");
+          }
         }
         else {
           return Promise.reject()
@@ -99,6 +107,7 @@ function App() {
       if (token && typeof window !== "undefined") {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        localStorage.removeItem("isAdmin");
         axios.defaults.headers.common = {};
         window.google?.accounts.id.revoke(token, () => {
           return Promise.resolve();
@@ -125,6 +134,47 @@ function App() {
       }
     },
   };
+
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+
+  if(isAdmin){
+    return(
+      <ColorModeContextProvider>
+      <CssBaseline />
+      <GlobalStyles styles={{ html: { WebkitFontSmoothing: "auto" } }} />
+      <RefineSnackbarProvider>
+        <Refine
+          dataProvider={dataProvider("http://localhost:8080/api/v1")}
+          notificationProvider={notificationProvider}
+          ReadyPage={ReadyPage}
+          catchAll={<ErrorComponent />}
+          resources={[
+            {
+              name: "properties",
+              list:AllProperties,
+              show:PropertyDetails,
+              create:CreateProperty,
+              edit:EditProperty,
+              icon: <VillaOutlined></VillaOutlined>
+            },
+
+          ]}
+          Title={Title}
+          Sider={Sider}
+          Layout={Layout}
+          Header={Header}
+          routerProvider={routerProvider}
+          authProvider={authProvider}
+          LoginPage={Login}
+          DashboardPage={Home}
+        />
+      </RefineSnackbarProvider>
+    </ColorModeContextProvider>
+    );
+  }
+  
+
+  
 
   return (
     <ColorModeContextProvider>

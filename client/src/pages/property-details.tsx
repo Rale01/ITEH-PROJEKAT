@@ -14,6 +14,14 @@ import {
 
 
 
+import { Refine, AuthProvider } from "@pankod/refine-core";
+import { CredentialResponse } from "interfaces/google";
+import { parseJwt } from "utils/parse-jwt";
+import axios, { AxiosRequestConfig } from "axios";
+
+
+
+
 
 import { CustomButton } from "components";
 
@@ -36,6 +44,99 @@ let ranNiz = generateRandomArray();
 
 
 const PropertyDetails = () => {
+
+    const authProvider: AuthProvider = {
+        login: async({ credential }: CredentialResponse) => {
+          const profileObj = credential ? parseJwt(credential) : null;
+    
+          //save user to mongodb
+          if(profileObj){
+            const response = await fetch('http://localhost:8080/api/v1/users', {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                name: profileObj.name,
+                email: profileObj.email,
+                avatar: profileObj.picture,
+              })
+            })
+    
+            const data = await response.json();
+    
+            if(response.status === 200) {
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                ...profileObj,
+                avatar: profileObj.picture,
+                userid:data._id
+              })
+            );
+              // check if the user is an admin
+              if (profileObj.email === "homenow.manager@gmail.com") {
+                localStorage.setItem("isAdmin", "true");
+              } else {
+                localStorage.removeItem("isAdmin");
+              }
+            }
+            else {
+              return Promise.reject()
+            }
+          }     
+    
+          localStorage.setItem("token", `${credential}`);
+    
+          return Promise.resolve();
+        },
+        logout: () => {
+          const token = localStorage.getItem("token");
+    
+          if (token && typeof window !== "undefined") {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            localStorage.removeItem("isAdmin");
+            axios.defaults.headers.common = {};
+            window.google?.accounts.id.revoke(token, () => {
+              return Promise.resolve();
+            });
+          }
+    
+          return Promise.resolve();
+        },
+        checkError: () => Promise.resolve(),
+        checkAuth: async () => {
+          const token = localStorage.getItem("token");
+    
+          if (token) {
+            return Promise.resolve();
+          }
+          return Promise.reject();
+        },
+    
+        getPermissions: () => Promise.resolve(),
+        getUserIdentity: async () => {
+          const user = localStorage.getItem("user");
+          if (user) {
+            return Promise.resolve(JSON.parse(user));
+          }
+        },
+      };
+    
+      const isAdmin = localStorage.getItem("isAdmin") === "true";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     const navigate = useNavigate();
     const { data: user } = useGetIdentity();
     const { queryResult } = useShow();
@@ -290,7 +391,26 @@ const PropertyDetails = () => {
                             flexWrap="wrap"
                             gap={2}
                         >
-                            <CustomButton
+
+
+
+
+                          {isAdmin ? (<CustomButton
+                                title={"Edit"}
+                                backgroundColor="#475BE8"
+                                color="#FCFCFC"
+                                fullWidth
+                                icon={
+                                     <Edit />
+                                }
+                                handleClick={() => {
+                                    
+                                        navigate(
+                                            `/properties/edit/${propertyDetails._id}`,
+                                        );
+                                }}
+                            />) : (
+                                <CustomButton
                                 title={!isCurrentUser ? "Message" : "Edit"}
                                 backgroundColor="#475BE8"
                                 color="#FCFCFC"
@@ -308,7 +428,25 @@ const PropertyDetails = () => {
                                     }
                                 }}
                             />
+                          )}
+
+
+
+                            {isAdmin ? (
                             <CustomButton
+                                title={"Delete"}
+                                backgroundColor={
+                                     "#d42e2e"
+                                }
+                                color="#FCFCFC"
+                                fullWidth
+                                icon={<Delete />}
+                                handleClick={() => {
+                                    handleDeleteProperty();
+                                }}
+                            />
+                            ) : (
+                                <CustomButton
                                 title={!isCurrentUser ? "Call" : "Delete"}
                                 backgroundColor={
                                     !isCurrentUser ? "#2ED480" : "#d42e2e"
@@ -323,6 +461,25 @@ const PropertyDetails = () => {
                                     }
                                 }}
                             />
+                          )}
+                            
+
+                            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                         </Stack>
                     </Stack>
 
@@ -338,6 +495,7 @@ const PropertyDetails = () => {
                     </Stack>
 
                     <Box>
+                    {isAdmin ? null : (
                         <CustomButton
                             title="Book Now"
                             backgroundColor="#475BE8"
@@ -346,8 +504,9 @@ const PropertyDetails = () => {
                             handleClick ={ () => {
                                 alert('Property has been booked successfully!');
                               }}
-                            
+                              
                         />
+                        )}
                     </Box>
                 </Box>
             </Box>

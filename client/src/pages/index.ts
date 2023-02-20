@@ -9,6 +9,7 @@ import PropertyDetails from './property-details';
 import EditProperty from './edit-property';
 import AboutUs from './about-us';
 
+
 export {
   AgentProfile,
   Agents,
@@ -19,5 +20,6 @@ export {
   MyProfile,
   PropertyDetails,
   EditProperty,
-  AboutUs
+  AboutUs,
+  
 };

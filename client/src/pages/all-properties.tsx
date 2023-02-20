@@ -9,9 +9,115 @@ import { useNavigate } from "@pankod/refine-react-router-v6";
 import { useMemo } from "react";
 
 import { PropertyCard, CustomButton } from "components";
+import { Refine, AuthProvider } from "@pankod/refine-core";
+import { CredentialResponse } from "interfaces/google";
+import { parseJwt } from "utils/parse-jwt";
+import axios, { AxiosRequestConfig } from "axios";
 
 
 const AllProperties = () => {
+
+  const authProvider: AuthProvider = {
+    login: async({ credential }: CredentialResponse) => {
+      const profileObj = credential ? parseJwt(credential) : null;
+
+      //save user to mongodb
+      if(profileObj){
+        const response = await fetch('http://localhost:8080/api/v1/users', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            name: profileObj.name,
+            email: profileObj.email,
+            avatar: profileObj.picture,
+          })
+        })
+
+        const data = await response.json();
+
+        if(response.status === 200) {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...profileObj,
+            avatar: profileObj.picture,
+            userid:data._id
+          })
+        );
+          // check if the user is an admin
+          if (profileObj.email === "homenow.manager@gmail.com") {
+            localStorage.setItem("isAdmin", "true");
+          } else {
+            localStorage.removeItem("isAdmin");
+          }
+        }
+        else {
+          return Promise.reject()
+        }
+      }     
+
+      localStorage.setItem("token", `${credential}`);
+
+      return Promise.resolve();
+    },
+    logout: () => {
+      const token = localStorage.getItem("token");
+
+      if (token && typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("isAdmin");
+        axios.defaults.headers.common = {};
+        window.google?.accounts.id.revoke(token, () => {
+          return Promise.resolve();
+        });
+      }
+
+      return Promise.resolve();
+    },
+    checkError: () => Promise.resolve(),
+    checkAuth: async () => {
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        return Promise.resolve();
+      }
+      return Promise.reject();
+    },
+
+    getPermissions: () => Promise.resolve(),
+    getUserIdentity: async () => {
+      const user = localStorage.getItem("user");
+      if (user) {
+        return Promise.resolve(JSON.parse(user));
+      }
+    },
+  };
+
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const navigate = useNavigate();
 
@@ -120,13 +226,16 @@ const AllProperties = () => {
         alignItems="center"
       >
         
-        <CustomButton
-          title="Add Property"
-          handleClick={() => navigate('/properties/create')}
-          backgroundColor="#475be8"
-          color="#fcfcfc"
-          icon={<Add/>}
-        />
+        {isAdmin ? null : (
+          <CustomButton
+            title="Add Property"
+            handleClick={() => navigate('/properties/create')}
+            backgroundColor="#475be8"
+            color="#fcfcfc"
+            icon={<Add />}
+          />
+        )}
+
       </Stack>
       <Box mt = "20px" sx={{display:'flex', flexWrap:'wrap', gap: 3 }}>
         {allProperties.map((property) => (

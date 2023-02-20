@@ -3,7 +3,17 @@ import { Box, Typography } from "@pankod/refine-mui";
 
 import { AgentCard } from "components";
 
+
+
 const Agents = () => {
+
+
+
+
+
+
+
+
     const { data, isLoading, isError } = useList({ resource: "users" });
 
     const allAgents = data?.data ?? [];
@@ -27,15 +37,18 @@ const Agents = () => {
                 }}
             >
                 {allAgents.map((agent) => (
-                    <AgentCard
+                    (agent.email !== "homenow.manager@gmail.com") && (
+                        <AgentCard
                         key={agent._id}
                         id={agent._id}
                         name={agent.name}
                         email={agent.email}
                         avatar={agent.avatar}
                         noOfProperties={agent.allProperties.length}
-                    />
-                ))}
+                        />
+                    )
+                    ))}
+
             </Box>
         </Box>
     );
