@@ -303,6 +303,8 @@ const PropertyDetails = () => {
                                         navigate(
                                             `/properties/edit/${propertyDetails._id}`,
                                         );
+                                    } else{
+                                        window.open('https://www.whatsapp.com/', '_blank');
                                     }
                                 }}
                             />
@@ -316,6 +318,9 @@ const PropertyDetails = () => {
                                 icon={!isCurrentUser ? <Phone /> : <Delete />}
                                 handleClick={() => {
                                     if (isCurrentUser) handleDeleteProperty();
+                                    else{
+                                        window.open('https://www.whatsapp.com/', '_blank');
+                                    }
                                 }}
                             />
                         </Stack>
@@ -338,6 +343,10 @@ const PropertyDetails = () => {
                             backgroundColor="#475BE8"
                             color="#FCFCFC"
                             fullWidth
+                            handleClick ={ () => {
+                                alert('Property has been booked successfully!');
+                              }}
+                            
                         />
                     </Box>
                 </Box>

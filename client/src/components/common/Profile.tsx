@@ -25,7 +25,7 @@ const Profile = ({ type, name, avatar, email, properties }: ProfileProps) => (
                 }}
             >
                 <img
-                    src="https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1374&q=80"
+                    src="https://img.freepik.com/premium-vector/agent-holding-home-key-hand-mortage-deal-with-real-estate-rent-property_284092-2384.jpg?w=360"
                     width={340}
                     height={320}
                     alt="abstract"
@@ -96,8 +96,7 @@ const Profile = ({ type, name, avatar, email, properties }: ProfileProps) => (
                                             fontSize={14}
                                             color="#11142D"
                                         >
-                                            4517 Washington Ave. Manchaster,
-                                            Kentucky 39495
+                                            4517 Downing Street, London, UK
                                         </Typography>
                                     </Box>
                                 </Stack>
