@@ -1,3 +1,4 @@
+//koriscene na dashboardu za status barove
 export const propertyReferralsInfo = [
     {
       title: 'Social Media',

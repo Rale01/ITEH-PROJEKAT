@@ -24,7 +24,8 @@ const Home = () => {
 
 
     })
-
+//koristi se opcionalni operator ?. da bi se izbeglo pristupanje undefined vrednostima 
+//u objektu data. Ako data ne postoji, uzmemo prazan niz umesto undefined vrednosti.
     const latestProperties = data?.data ?? [];
 
     if(isLoading) return <Typography>Loading...</Typography>

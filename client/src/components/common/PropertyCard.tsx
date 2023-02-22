@@ -4,6 +4,8 @@ import { Typography, Box, Card, CardMedia, CardContent, Stack } from "@pankod/re
 
 import { PropertyCardProps } from "interfaces/property";
 
+
+//prima parametra iz interfejsa i prikazuje na kartici nekretnine
 const PropertyCard = ({id, title, location, price, photo}: PropertyCardProps) => {
   return (
     <Card

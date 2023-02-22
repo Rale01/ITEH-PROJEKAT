@@ -1,3 +1,6 @@
+
+//eksportuje sve komponente
+
 // common
 import Profile from './common/Profile';
 import PropertyCard from './common/PropertyCard';

@@ -31,6 +31,8 @@ function checkImage(url: any) {
     return img.width !== 0 && img.height !== 0;
 }
 
+
+//za generisanje random broja zvezdica
 function generateRandomArray() {
   let length = Math.floor(Math.random() * 5) + 1;
   let arr = [];
@@ -44,8 +46,14 @@ let ranNiz = generateRandomArray();
 
 
 const PropertyDetails = () => {
-
+//authProvider objekat koji se koristi u React aplikacijama za upravljanje autentikacijom korisnika.
+// Objekat ima pet funkcija: login, logout, checkError, checkAuth i getUserIdentity.
     const authProvider: AuthProvider = {
+        
+//login se poziva kada se korisnik uloguje. Ona prima podatke o korisnikovom autentifikacionom token-u kao argument.
+// U ovoj funkciji se proverava da li je autentifikacioni token ispravan i, ako jeste, izdvoji se profileObj koji sadrži 
+//podatke o korisniku. Zatim se korisnikov name, email i avatar sačuvaju u bazi podataka, a zatim se kreira objekat user 
+//koji se skladišti u localStorage. Ako je korisnik admin, to se takođe označava u localStorage.
         login: async({ credential }: CredentialResponse) => {
           const profileObj = credential ? parseJwt(credential) : null;
     
@@ -72,7 +80,7 @@ const PropertyDetails = () => {
                 userid:data._id
               })
             );
-              // check if the user is an admin
+              // proveri da li je  admin i oznaci u bazi
               if (profileObj.email === "homenow.manager@gmail.com") {
                 localStorage.setItem("isAdmin", "true");
               } else {
@@ -80,14 +88,17 @@ const PropertyDetails = () => {
               }
             }
             else {
+                 //autentifikacija neuspesna
               return Promise.reject()
             }
           }     
     
           localStorage.setItem("token", `${credential}`);
-    
+    //autentifikacija uspesna
           return Promise.resolve();
         },
+
+        //Funkcija logout se poziva kada se korisnik izloguje. Ona briše podatke o korisniku, token-u i postavlja isAdmin na null.
         logout: () => {
           const token = localStorage.getItem("token");
     
@@ -103,7 +114,12 @@ const PropertyDetails = () => {
     
           return Promise.resolve();
         },
+
+        //Funkcija checkError se poziva kada se desi greška u autentikaciji.
         checkError: () => Promise.resolve(),
+
+        //Funkcija checkAuth se poziva kako bi se proverilo da li je korisnik ulogovan. 
+//Ona proverava postoji li token u localStorage i u zavisnosti od toga, vraća Promise.resolve() ili Promise.reject().
         checkAuth: async () => {
           const token = localStorage.getItem("token");
     
@@ -114,6 +130,9 @@ const PropertyDetails = () => {
         },
     
         getPermissions: () => Promise.resolve(),
+
+         //Funkcija getUserIdentity se poziva kako bi se dobili podaci o trenutno ulogovanom korisniku.
+    // Ona proverava postoji li korisnik u localStorage i u zavisnosti od toga, vraća Promise.resolve() ili Promise.reject().
         getUserIdentity: async () => {
           const user = localStorage.getItem("user");
           if (user) {
@@ -121,7 +140,7 @@ const PropertyDetails = () => {
           }
         },
       };
-    
+    //kreranje promenjive isAdmin samo ukoliko je u bazi data kolona true
       const isAdmin = localStorage.getItem("isAdmin") === "true";
 
 
@@ -141,6 +160,7 @@ const PropertyDetails = () => {
     const { data: user } = useGetIdentity();
     const { queryResult } = useShow();
     const { mutate } = useDelete();
+    //useParams() je kuka iz React Routera koja se koristi za dobijanje parametara id.
     const { id } = useParams();
 
     const { data, isLoading, isError } = queryResult;
@@ -159,6 +179,9 @@ const PropertyDetails = () => {
 
 
     {/*za brisanje propertija*/}
+    //handleDeleteProperty() funkcija se poziva kada korisnik klikne na dugme za brisanje propertija.
+    // U ovoj funkciji se prikazuje prozor za potvrdu brisanja, a ako korisnik potvrdi brisanje, poziva 
+    //se funkcija mutate() koja briše propertij. U slučaju uspešnog brisanja, korisnik se preusmerava na stranicu sa listom propertija.
     const handleDeleteProperty = () => {
         const response = confirm(
             "Are you sure you want to delete this property?",
@@ -220,6 +243,7 @@ const PropertyDetails = () => {
                                 {propertyDetails.propertyType}
                             </Typography>
                             <Box>
+                                {/*zvezdice */}
                                 {ranNiz.map((item) => (
                                     <Star
                                         key={`star-${item}`}
@@ -394,7 +418,7 @@ const PropertyDetails = () => {
 
 
 
-
+                                {/*menjanje dugmeta u yavisnosti da li je admin ili ne*/}
                           {isAdmin ? (<CustomButton
                                 title={"Edit"}
                                 backgroundColor="#475BE8"
@@ -431,7 +455,7 @@ const PropertyDetails = () => {
                           )}
 
 
-
+                                {/*menjanje dugmeta u zavisnosti da li je admin ili ne*/}
                             {isAdmin ? (
                             <CustomButton
                                 title={"Delete"}

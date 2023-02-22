@@ -6,6 +6,7 @@ import { Typography, Box, Stack} from '@pankod/refine-mui'
 
 import { TotalRevenueOptions, TotalRevenueSeries } from './chart.config'
 
+//za grafikon
 const totalRevenue = () => {
   return (
     <Box

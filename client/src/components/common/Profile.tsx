@@ -4,12 +4,13 @@ import { Box, Stack, Typography } from "@pankod/refine-mui";
 import { ProfileProps, PropertyProps } from "interfaces/common";
 import PropertyCard from "./PropertyCard";
 
+//provera url slike
 function checkImage(url: any) {
     const img = new Image();
     img.src = url;
     return img.width !== 0 && img.height !== 0;
 }
-
+//iygled profila
 const Profile = ({ type, name, avatar, email, properties }: ProfileProps) => (
     <Box>
         <Typography fontSize={25} fontWeight={700} color="#11142D">

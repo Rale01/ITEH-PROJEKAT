@@ -3,7 +3,7 @@ import { Button, textTransform } from "@pankod/refine-mui";
 import { CustomButtonProps } from "interfaces/common";
 
 
-
+//kupi sve parametre iz interfejsa
 const CustomButton = ({type, title, backgroundColor, color, fullWidth, icon, handleClick, disabled}: CustomButtonProps) => {
   return (
     <Button

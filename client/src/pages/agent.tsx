@@ -7,15 +7,10 @@ import { AgentCard } from "components";
 
 const Agents = () => {
 
-
-
-
-
-
-
-
     const { data, isLoading, isError } = useList({ resource: "users" });
 
+    //koristi se opcionalni operator ?. da bi se izbeglo pristupanje undefined vrednostima 
+    //u objektu data. Ako data ne postoji, uzmemo prazan niz umesto undefined vrednosti.
     const allAgents = data?.data ?? [];
 
     if (isLoading) return <div>loading...</div>;

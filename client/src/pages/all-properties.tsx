@@ -9,6 +9,8 @@ import { useNavigate } from "@pankod/refine-react-router-v6";
 import { useMemo } from "react";
 
 import { PropertyCard, CustomButton } from "components";
+
+//za autentifikaciju
 import { Refine, AuthProvider } from "@pankod/refine-core";
 import { CredentialResponse } from "interfaces/google";
 import { parseJwt } from "utils/parse-jwt";
@@ -16,12 +18,18 @@ import axios, { AxiosRequestConfig } from "axios";
 
 
 const AllProperties = () => {
-
+//authProvider objekat koji se koristi u React aplikacijama za upravljanje autentikacijom korisnika.
+// Objekat ima pet funkcija: login, logout, checkError, checkAuth i getUserIdentity.
   const authProvider: AuthProvider = {
+
+//login se poziva kada se korisnik uloguje. Ona prima podatke o korisnikovom autentifikacionom token-u kao argument.
+// U ovoj funkciji se proverava da li je autentifikacioni token ispravan i, ako jeste, izdvoji se profileObj koji sadrži 
+//podatke o korisniku. Zatim se korisnikov name, email i avatar sačuvaju u bazi podataka, a zatim se kreira objekat user 
+//koji se skladišti u localStorage. Ako je korisnik admin, to se takođe označava u localStorage.
     login: async({ credential }: CredentialResponse) => {
       const profileObj = credential ? parseJwt(credential) : null;
 
-      //save user to mongodb
+      
       if(profileObj){
         const response = await fetch('http://localhost:8080/api/v1/users', {
           method: 'POST',
@@ -44,7 +52,7 @@ const AllProperties = () => {
             userid:data._id
           })
         );
-          // check if the user is an admin
+          // proveri da li je  admin i oznaci u bazi
           if (profileObj.email === "homenow.manager@gmail.com") {
             localStorage.setItem("isAdmin", "true");
           } else {
@@ -52,14 +60,17 @@ const AllProperties = () => {
           }
         }
         else {
+          //autentifikacija neuspesna
           return Promise.reject()
         }
       }     
 
       localStorage.setItem("token", `${credential}`);
-
+    //autentifikacija uspesna
       return Promise.resolve();
     },
+
+    //Funkcija logout se poziva kada se korisnik izloguje. Ona briše podatke o korisniku, token-u i postavlja isAdmin na null.
     logout: () => {
       const token = localStorage.getItem("token");
 
@@ -75,7 +86,11 @@ const AllProperties = () => {
 
       return Promise.resolve();
     },
+//Funkcija checkError se poziva kada se desi greška u autentikaciji.
     checkError: () => Promise.resolve(),
+
+//Funkcija checkAuth se poziva kako bi se proverilo da li je korisnik ulogovan. 
+//Ona proverava postoji li token u localStorage i u zavisnosti od toga, vraća Promise.resolve() ili Promise.reject().
     checkAuth: async () => {
       const token = localStorage.getItem("token");
 
@@ -86,6 +101,8 @@ const AllProperties = () => {
     },
 
     getPermissions: () => Promise.resolve(),
+    //Funkcija getUserIdentity se poziva kako bi se dobili podaci o trenutno ulogovanom korisniku.
+    // Ona proverava postoji li korisnik u localStorage i u zavisnosti od toga, vraća Promise.resolve() ili Promise.reject().
     getUserIdentity: async () => {
       const user = localStorage.getItem("user");
       if (user) {
@@ -93,33 +110,15 @@ const AllProperties = () => {
       }
     },
   };
-
+//kreranje promenjive isAdmin samo ukoliko je u bazi data kolona true
   const isAdmin = localStorage.getItem("isAdmin") === "true";
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//za preusmeravanje na druge stranice u aplikaciji
   const navigate = useNavigate();
+
+
+//useTable koji vraća objekat sa podacima o tabeli, trenutnoj stranici, broju stranica i opcijama za sortiranje i filtriranje.
 
   const {
     tableQueryResult: {data, isLoading, isError},
@@ -131,9 +130,13 @@ const AllProperties = () => {
     filters, setFilters,
   } = useTable();
 
+
+//koristi se opcionalni operator ?. da bi se izbeglo pristupanje undefined vrednostima 
+//u objektu data. Ako data ne postoji, uzmemo prazan niz umesto undefined vrednosti.
   const allProperties = data?.data ?? [];
 
-  {/* paginacija*/}
+  
+  //sortiranje po ceni
   const currentPrice = sorter.find((item) => item.field === 'price')?.order;
 
   const toggleSort = (field: string) => {
@@ -141,10 +144,17 @@ const AllProperties = () => {
   }
 
   {/* pretraga*/}
+  // useMemo što znači da će se currentFilterValues izračunati samo ako je filters promenjen.
   const currentFilterValues = useMemo(() => {
+    //metoda flatMap() prolazi kroz svaki element filters niza, a zatim vrši proveru da li taj
+    // element ima svojstvo field - ('field' in item) proverava da li item sadrži svojstvo field.
+    // Ako element ima svojstvo field, taj element se dodaje u novi niz logicalFilters. U suprotnom,
+    // ako element nema svojstvo field, on se ne dodaje u niz.
     const logicalFilters = filters.flatMap((item) => ('field' in item ? item : []))
 
     return {
+      //currentFilterValues omogućava filtriranje po nazivu nekretnine i tipu imovine.
+      // Ako filter ne postoji, koristi se podrazumevana vrednost ''.
       title: logicalFilters.find((item) => item.field === 'title')?.value || '',
       propertyType: logicalFilters.find((item) => item.field === 'propertyType')?.value || '',
     }
@@ -204,7 +214,7 @@ const AllProperties = () => {
                     ], 'replace')
                   }}
                     >
-
+                      {/*padajuca lista za tip nekretnine, mapira jedan po jedan i prikazuje u meniju malim slovima*/}
                       <MenuItem value="">All</MenuItem>
                       {['Apartment', 'Villa', 'Farmhouse', 'Condos', 'Townhouse', 'Duplex', 'Studio', 'Chalet'].map((type) => (
                           <MenuItem key={type} value={type.toLowerCase()}>{type}</MenuItem>
@@ -229,6 +239,7 @@ const AllProperties = () => {
         {isAdmin ? null : (
           <CustomButton
             title="Add Property"
+            //vodi na novu stranicu za kreiranje
             handleClick={() => navigate('/properties/create')}
             backgroundColor="#475be8"
             color="#fcfcfc"
@@ -256,6 +267,7 @@ const AllProperties = () => {
               <Box display="flex" gap={2} mt={3} flexWrap="wrap">
                   <CustomButton
                     title = {'Previous'}
+                    /*racunanje trenutne stranice */
                     handleClick={() => setCurrent((prev) => prev - 1)}
                     backgroundColor="#475be8"
                     color="#fcfcfc"
@@ -266,6 +278,7 @@ const AllProperties = () => {
                   </Box>
                   <CustomButton
                     title = {'Next'}
+                    /*racunanje trenutne stranice */
                     handleClick={() => setCurrent((prev) => prev + 1)}
                     backgroundColor="#475be8"
                     color="#fcfcfc"

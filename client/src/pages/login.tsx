@@ -8,35 +8,45 @@ import { homenow } from '../assets';
 import { CredentialResponse } from "../interfaces/google";
 
 export const Login: React.FC = () => {
+  //definisemo funkciju useLogin() koja poziva funkciju mutate koja se kosristi za proveru kredincijala korisnika pre prijave na server.
+  //prijava se vrsi klikom na google dugme.
   const { mutate: login } = useLogin<CredentialResponse>();
 
+  //Google dugme za prijavu. Predstavljeno je kao funkcija.
   const GoogleButton = (): JSX.Element => {
+    //useRef() React hook da bi se dobio referenca na HTML div element u kome će se prikazati Google dugme. 
     const divRef = useRef<HTMLDivElement>(null);
-
+    //useEffect() React hook se koristi za inicijalizaciju Google API-ja i prikazivanje Google dugmeta
     useEffect(() => {
       if (typeof window === "undefined" || !window.google || !divRef.current) {
         return;
       }
 
       try {
+        // Ova funkcija se izvršava samo jednom, kada se komponenta učita.
         window.google.accounts.id.initialize({
           ux_mode: "popup",
           client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+          //callback funkcija koja će se izvršiti kada korisnik uspešno prijavi 
+          //se na Google nalog. Callback funkcija poziva login() funkciju, koja se 
+          //dobija iz useLogin() funkcije, sa CredentialResponse objektom koji predstavlja kredencijale korisnika.
           callback: async (res: CredentialResponse) => {
             if (res.credential) {
               login(res);
             }
           },
         });
+        //izgled Google button-a
         window.google.accounts.id.renderButton(divRef.current, {
           theme: "filled_blue",
           size: "medium",
           type: "standard",
         });
+        //Login neuspesan
       } catch (error) {
         console.log(error);
       }
-    }, []); // you can also add your client id as dependency here
+    }, []); 
 
     return <div ref={divRef} />;
   };

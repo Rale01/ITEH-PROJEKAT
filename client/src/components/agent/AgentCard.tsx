@@ -5,12 +5,15 @@ import { Link } from "@pankod/refine-react-router-v6";
 
 import { AgentCardProp, InfoBarProps } from "interfaces/agent";
 
+//checkImage prima url kao argument i proverava da li je slika sa ovog URL-a učitana i da li ima dimenzije različite od nule
 function checkImage(url: any) {
     const img = new Image();
     img.src = url;
     return img.width !== 0 && img.height !== 0;
 }
 
+//Komponenta InfoBar prikazuje ikonu i tekst. Prima objekat InfoBarProps koji ima dva svojstva: icon i name. 
+//icon prikazuje ikonu koja se prosleđuje, a name prikazuje tekst. 
 const InfoBar = ({ icon, name }: InfoBarProps) => (
     <Stack
         flex={1}
@@ -35,14 +38,17 @@ const AgentCard = ({
     const { data: currentUser } = useGetIdentity();
 
     const generateLink = () => {
+        //ako je to taj user ide odmah na njegov profil
         if (currentUser.email === email) return "/my-profile";
 
+        //u suprotnom prikazuje izabranog agenta
         return `/agents/show/${id}`;
     };
 
     return (
         <Box
             component={Link}
+            //navigacija koja je prethodno definisana
             to={generateLink()}
             width="100%"
             sx={{
